@@ -42,7 +42,7 @@ function [V,F] = load_obj2(filename)
       F(face_index,:) = face_long_long;
       face_index = face_index+1;
     else
-      fprintf('Ignored: %s',line);
+      %%fprintf('Ignored: %s',line);
     end
 
     line = fgets(fid);
