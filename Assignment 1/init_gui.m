@@ -1,4 +1,5 @@
 function [handles] = init_gui(handles)
+	handles = initHandles(handles);
 	handles = init_object(handles);
 	handles = init_camera(handles);
 

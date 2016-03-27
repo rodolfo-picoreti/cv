@@ -43,15 +43,6 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-function value = saturate(range, value)
-  if value > range(2) value = range(2); end
-  if value < range(1) value = range(1); end
-
-function result = map(from_range, to_range, value)
-  df = from_range(2) - from_range(1);
-  dt = to_range(2) - to_range(1);
-  result = dt/df*(value - from_range(1)) + to_range(1);
-
 function handles = resetObject(handles)
   handles.sliderObjTX.Value = 0.5;
   handles.sliderObjTY.Value = 0.5;
@@ -116,11 +107,6 @@ function resetObjectPosition_Callback(hObject, eventdata, handles)
 
 
 function editObjRY_Callback(hObject, eventdata, handles)
-  from_range = [-180, 180];
-  value = saturate(from_range, str2double(get(hObject,'String')));
-  set(hObject, 'String', num2str(value));
-  value = map(from_range, [0,1], value);
-  handles.sliderObjRY.Value = value;
 
 
 % --- Executes during object creation, after setting all properties.
@@ -132,10 +118,8 @@ function editObjRY_CreateFcn(hObject, eventdata, handles)
 
 % --- Executes on slider movement.
 function sliderObjRX_Callback(hObject, eventdata, handles)
-  to_range = [-180,180];
-  value = map([0,1], to_range, get(hObject, 'Value'));
-  handles.editObjRX.String = num2str(value);
-
+  updateSlider(handles, ObjRX);
+  
 
 % --- Executes during object creation, after setting all properties.
 function sliderObjRX_CreateFcn(hObject, eventdata, handles)
@@ -145,11 +129,6 @@ function sliderObjRX_CreateFcn(hObject, eventdata, handles)
 
 
 function editObjRX_Callback(hObject, eventdata, handles)
-  from_range = [-180, 180];
-  value = saturate(from_range, str2double(get(hObject,'String')));
-  set(hObject, 'String', num2str(value));
-  value = map(from_range, [0,1], value);
-  handles.sliderObjRX.Value = value;
 
 
 % --- Executes during object creation, after setting all properties.
@@ -161,10 +140,8 @@ function editObjRX_CreateFcn(hObject, eventdata, handles)
 
 % --- Executes on slider movement.
 function sliderObjRZ_Callback(hObject, eventdata, handles)
-  to_range = [-180,180];
-  value = map([0,1], to_range, get(hObject, 'Value'));
-  handles.editObjRZ.String = num2str(value);
-
+  updateSlider(handles, ObjRZ);
+  
 
 % --- Executes during object creation, after setting all properties.
 function sliderObjRZ_CreateFcn(hObject, eventdata, handles)
@@ -174,11 +151,8 @@ function sliderObjRZ_CreateFcn(hObject, eventdata, handles)
 
 
 function editObjRZ_Callback(hObject, eventdata, handles)
-  from_range = [-180, 180];
-  value = saturate(from_range, str2double(get(hObject,'String')));
-  set(hObject, 'String', num2str(value));
-  value = map(from_range, [0,1], value);
-  handles.sliderObjRZ.Value = value;
+  updateEdit(handles, 'ObjRZ');
+  from_range = [-180, 18
 
 
 % --- Executes during object creation, after setting all properties.
@@ -190,10 +164,8 @@ function editObjRZ_CreateFcn(hObject, eventdata, handles)
 
 % --- Executes on slider movement.
 function sliderObjRY_Callback(hObject, eventdata, handles)
-  to_range = [-180,180];
-  value = map([0,1], to_range, get(hObject, 'Value'));
-  handles.editObjRY.String = num2str(value);
-
+  updateSlider(handles, ObjRY);
+  
 
 % --- Executes during object creation, after setting all properties.
 function sliderObjRY_CreateFcn(hObject, eventdata, handles)
@@ -204,10 +176,8 @@ function sliderObjRY_CreateFcn(hObject, eventdata, handles)
 
 % --- Executes on slider movement.
 function sliderObjTY_Callback(hObject, eventdata, handles)
-  to_range = handles.world.axis(3:4);
-  value = map([0,1], to_range, get(hObject, 'Value'));
-  handles.editObjTY.String = num2str(value);
-
+  updateSlider(handles, ObjTY);
+  
 
 % --- Executes during object creation, after setting all properties.
 function sliderObjTY_CreateFcn(hObject, eventdata, handles)
@@ -217,11 +187,6 @@ function sliderObjTY_CreateFcn(hObject, eventdata, handles)
 
 
 function editObjTZ_Callback(hObject, eventdata, handles)
-  from_range = handles.world.axis(5:6);
-  value = saturate(from_range, str2double(get(hObject,'String')));
-  set(hObject, 'String', num2str(value));
-  value = map(from_range, [0,1], value);
-  handles.sliderObjTZ.Value = value;
 
 
 % --- Executes during object creation, after setting all properties.
@@ -233,10 +198,8 @@ function editObjTZ_CreateFcn(hObject, eventdata, handles)
 
 % --- Executes on slider movement.
 function sliderObjTZ_Callback(hObject, eventdata, handles)
-  to_range = handles.world.axis(5:6);
-  value = map([0,1], to_range, get(hObject, 'Value'));
-  handles.editObjTZ.String = num2str(value);
-
+  updateSlider(handles, ObjTZ);
+  
 
 % --- Executes during object creation, after setting all properties.
 function sliderObjTZ_CreateFcn(hObject, eventdata, handles)
@@ -246,11 +209,7 @@ function sliderObjTZ_CreateFcn(hObject, eventdata, handles)
 
 
 function editObjTX_Callback(hObject, eventdata, handles)
-  from_range = handles.world.axis(1:2);
-  value = saturate(from_range, str2double(get(hObject,'String')));
-  set(hObject, 'String', num2str(value));
-  value = map(from_range, [0,1], value);
-  handles.sliderObjTX.Value = value;
+  updateEdit(handles, 'ObjTX');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -262,9 +221,9 @@ function editObjTX_CreateFcn(hObject, eventdata, handles)
 
 % --- Executes on slider movement.
 function sliderObjTX_Callback(hObject, eventdata, handles)
-  to_range = handles.world.axis(1:2);
-  value = map([0,1], to_range, get(hObject, 'Value'));
-  handles.editObjTX.String = num2str(value);
+  updateSlider(handles, ObjTX);
+  updateSlider(handles, 'ObjTX');
+  %m2str(value);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -275,11 +234,6 @@ function sliderObjTX_CreateFcn(hObject, eventdata, handles)
 
 
 function editObjTY_Callback(hObject, eventdata, handles)
-  from_range = handles.world.axis(3:4);
-  value = saturate(from_range, str2double(get(hObject,'String')));
-  set(hObject, 'String', num2str(value));
-  value = map(from_range, [0,1], value);
-  handles.sliderObjTY.Value = value;
 
 
 % --- Executes during object creation, after setting all properties.
@@ -290,11 +244,6 @@ function editObjTY_CreateFcn(hObject, eventdata, handles)
 
 
 function editCamTY_Callback(hObject, eventdata, handles)
-  from_range = handles.world.axis(3:4);
-  value = saturate(from_range, str2double(get(hObject,'String')));
-  set(hObject, 'String', num2str(value));
-  value = map(from_range, [0,1], value);
-  handles.sliderCamTY.Value = value;
 
 
 % --- Executes during object creation, after setting all properties.
@@ -306,10 +255,8 @@ function editCamTY_CreateFcn(hObject, eventdata, handles)
 
 % --- Executes on slider movement.
 function sliderCamTX_Callback(hObject, eventdata, handles)
-  to_range = handles.world.axis(1:2);
-  value = map([0,1], to_range, get(hObject, 'Value'));
-  handles.editCamTX.String = num2str(value);
-
+  updateSlider(handles, CamTX);
+  
 
 % --- Executes during object creation, after setting all properties.
 function sliderCamTX_CreateFcn(hObject, eventdata, handles)
@@ -319,11 +266,7 @@ function sliderCamTX_CreateFcn(hObject, eventdata, handles)
 
 
 function editCamTX_Callback(hObject, eventdata, handles)
-  from_range = handles.world.axis(1:2);
-  value = saturate(from_range, str2double(get(hObject,'String')));
-  set(hObject, 'String', num2str(value));
-  value = map(from_range, [0,1], value);
-  handles.sliderCamTX.Value = value;
+  updateEdit(handles, 'CamTX');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -335,10 +278,8 @@ function editCamTX_CreateFcn(hObject, eventdata, handles)
 
 % --- Executes on slider movement.
 function sliderCamTZ_Callback(hObject, eventdata, handles)
-  to_range = handles.world.axis(5:6);
-  value = map([0,1], to_range, get(hObject, 'Value'));
-  handles.editCamTZ.String = num2str(value);
-
+  updateSlider(handles, CamTZ);
+  
 
 % --- Executes during object creation, after setting all properties.
 function sliderCamTZ_CreateFcn(hObject, eventdata, handles)
@@ -348,11 +289,6 @@ function sliderCamTZ_CreateFcn(hObject, eventdata, handles)
 
 
 function editCamTZ_Callback(hObject, eventdata, handles)
-  from_range = handles.world.axis(5:6);
-  value = saturate(from_range, str2double(get(hObject,'String')));
-  set(hObject, 'String', num2str(value));
-  value = map(from_range, [0,1], value);
-  handles.sliderCamTZ.Value = value;
 
 
 % --- Executes during object creation, after setting all properties.
@@ -364,10 +300,8 @@ function editCamTZ_CreateFcn(hObject, eventdata, handles)
 
 % --- Executes on slider movement.
 function sliderCamTY_Callback(hObject, eventdata, handles)
-  to_range = handles.world.axis(3:4);
-  value = map([0,1], to_range, get(hObject, 'Value'));
-  handles.editCamTY.String = num2str(value);
-
+  updateSlider(handles, CamTY);
+  
 
 % --- Executes during object creation, after setting all properties.
 function sliderCamTY_CreateFcn(hObject, eventdata, handles)
@@ -378,10 +312,8 @@ function sliderCamTY_CreateFcn(hObject, eventdata, handles)
 
 % --- Executes on slider movement.
 function sliderCamRY_Callback(hObject, eventdata, handles)
-  to_range = [-180,180];
-  value = map([0,1], to_range, get(hObject, 'Value'));
-  handles.editCamRY.String = num2str(value);
-
+  updateSlider(handles, CamRY);
+  
 
 % --- Executes during object creation, after setting all properties.
 function sliderCamRY_CreateFcn(hObject, eventdata, handles)
@@ -391,11 +323,6 @@ function sliderCamRY_CreateFcn(hObject, eventdata, handles)
 
 
 function editCamRZ_Callback(hObject, eventdata, handles)
-  from_range = [-180, 180];
-  value = saturate(from_range, str2double(get(hObject,'String')));
-  set(hObject, 'String', num2str(value));
-  value = map(from_range, [0,1], value);
-  handles.sliderCamRZ.Value = value;
 
 
 % --- Executes during object creation, after setting all properties.
@@ -407,10 +334,8 @@ function editCamRZ_CreateFcn(hObject, eventdata, handles)
 
 % --- Executes on slider movement.
 function sliderCamRZ_Callback(hObject, eventdata, handles)
-  to_range = [-180,180];
-  value = map([0,1], to_range, get(hObject, 'Value'));
-  handles.editCamRZ.String = num2str(value);
-
+  updateSlider(handles, CamRZ);
+  
 
 % --- Executes during object creation, after setting all properties.
 function sliderCamRZ_CreateFcn(hObject, eventdata, handles)
@@ -420,11 +345,6 @@ function sliderCamRZ_CreateFcn(hObject, eventdata, handles)
 
 
 function editCamRX_Callback(hObject, eventdata, handles)
-  from_range = [-180, 180];
-  value = saturate(from_range, str2double(get(hObject,'String')));
-  set(hObject, 'String', num2str(value));
-  value = map(from_range, [0,1], value);
-  handles.sliderCamRX.Value = value;
 
 
 % --- Executes during object creation, after setting all properties.
@@ -436,10 +356,8 @@ function editCamRX_CreateFcn(hObject, eventdata, handles)
 
 % --- Executes on slider movement.
 function sliderCamRX_Callback(hObject, eventdata, handles)
-  to_range = [-180,180];
-  value = map([0,1], to_range, get(hObject, 'Value'));
-  handles.editCamRX.String = num2str(value);
-
+  updateSlider(handles, CamRX);
+  
 
 % --- Executes during object creation, after setting all properties.
 function sliderCamRX_CreateFcn(hObject, eventdata, handles)
@@ -449,11 +367,6 @@ function sliderCamRX_CreateFcn(hObject, eventdata, handles)
 
 
 function editCamRY_Callback(hObject, eventdata, handles)
-  from_range = [-180, 180];
-  value = saturate(from_range, str2double(get(hObject,'String')));
-  set(hObject, 'String', num2str(value));
-  value = map(from_range, [0,1], value);
-  handles.sliderCamRY.Value = value;
 
 
 % --- Executes during object creation, after setting all properties.
