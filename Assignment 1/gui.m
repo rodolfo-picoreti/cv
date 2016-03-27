@@ -43,42 +43,12 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-function handles = resetObject(handles)
-  handles.sliderObjTX.Value = 0.5;
-  handles.sliderObjTY.Value = 0.5;
-  handles.sliderObjTZ.Value = 0.5;
-  handles.sliderObjRX.Value = 0.5;
-  handles.sliderObjRY.Value = 0.5;
-  handles.sliderObjRZ.Value = 0.5;  
-  handles.editObjTX.String = '0';
-  handles.editObjTY.String = '0';
-  handles.editObjTZ.String = '0';
-  handles.editObjRX.String = '0';
-  handles.editObjRY.String = '0';
-  handles.editObjRZ.String = '0';
-
-function handles = resetCamera(handles)
-  handles.sliderCamTX.Value = 0.5;
-  handles.sliderCamTY.Value = 0.5;
-  handles.sliderCamTZ.Value = 0.5;
-  handles.sliderCamRX.Value = 0.5;
-  handles.sliderCamRY.Value = 0.5;
-  handles.sliderCamRZ.Value = 0.5;  
-  handles.editCamTX.String = '0';
-  handles.editCamTY.String = '0';
-  handles.editCamTZ.String = '0';
-  handles.editCamRX.String = '0';
-  handles.editCamRY.String = '0';
-  handles.editCamRZ.String = '0';
-
 % --- Executes just before gui is made visible.
 function gui_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 
 % Update handles structure
-handles = init_gui(handles);
-handles = resetObject(handles);
-handles = resetCamera(handles);
+handles = initGui(handles);
 guidata(hObject, handles);
 
 % UIWAIT makes gui wait for user response (see UIRESUME)
@@ -105,32 +75,34 @@ function resetObjectPosition_Callback(hObject, eventdata, handles)
 
 %% --- EDIT OBJ FUNCTIONS
 function editObjTX_Callback(hObject, eventdata, handles)
-  handles = updateEdit(hObject, handles, 'ObjTX');
+  updateEdit(handles, 'ObjTX');
 function editObjTY_Callback(hObject, eventdata, handles)
-  handles = updateEdit(hObject, handles, 'ObjTY');
+  updateEdit(handles, 'ObjTY');
 function editObjTZ_Callback(hObject, eventdata, handles)
-  handles = updateEdit(hObject, handles, 'ObjTZ');
+  updateEdit(handles, 'ObjTZ');
 
 function editObjRX_Callback(hObject, eventdata, handles)
-  handles = updateEdit(hObject, handles, 'ObjRX');
+  updateEdit(handles, 'ObjRX');
 function editObjRY_Callback(hObject, eventdata, handles)
-  handles = updateEdit(hObject, handles, 'ObjRY');
+  updateEdit(handles, 'ObjRY');
 function editObjRZ_Callback(hObject, eventdata, handles)
-  handles = updateEdit(hObject, handles, 'ObjRZ');
+  updateEdit(handles, 'ObjRZ');
+
 %% --- EDIT CAM FUNCTIONS
 function editCamTX_Callback(hObject, eventdata, handles)
-  handles = updateEdit(hObject, handles, 'CamTX');
+  updateEdit(handles, 'CamTX');
 function editCamTY_Callback(hObject, eventdata, handles)
-  handles = updateEdit(hObject, handles, 'CamTY');
+  updateEdit(handles, 'CamTY');
 function editCamTZ_Callback(hObject, eventdata, handles)
-  handles = updateEdit(hObject, handles, 'CamTZ');
+  updateEdit(handles, 'CamTZ');
   
 function editCamRX_Callback(hObject, eventdata, handles)
-  handles = updateEdit(hObject, handles, 'CamRX');
+  updateEdit(handles, 'CamRX');
 function editCamRY_Callback(hObject, eventdata, handles)
-  handles = updateEdit(hObject, handles, 'CamRY');
+  updateEdit(handles, 'CamRY');
 function editCamRZ_Callback(hObject, eventdata, handles)
-  handles = updateEdit(hObject, handles, 'CamRZ');
+  updateEdit(handles, 'CamRZ');
+
 %% --- SLIDER OBJ FUNCTIONS
 function sliderObjTX_Callback(hObject, eventdata, handles)
   updateSlider(handles, 'ObjTX');
@@ -145,6 +117,7 @@ function sliderObjRY_Callback(hObject, eventdata, handles)
   updateSlider(handles, 'ObjRY');
 function sliderObjRZ_Callback(hObject, eventdata, handles)
   updateSlider(handles, 'ObjRZ');  
+
 %% --- SLIDER CAM FUNCTIONS
 function sliderCamTX_Callback(hObject, eventdata, handles)
   updateSlider(handles, 'CamTX');
