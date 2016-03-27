@@ -1,2 +1,2 @@
 function [handles] = resetCamera (handles)
-	1+1;
+	handles = resetKeys(handles, @(who) strfind(who, 'Cam'));

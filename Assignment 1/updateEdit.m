@@ -11,3 +11,4 @@ function [handles] = updateEdit(handles, who)
 	set(handles.(handles.edits(who)), 'String', num2str(value));
   	set(handles.(handles.sliders(who)), 'Value', ratio);
 
+  	plotWorld(handles);

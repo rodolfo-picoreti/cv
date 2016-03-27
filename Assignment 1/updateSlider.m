@@ -6,3 +6,4 @@ function [handles] = updateSlider(handles, who)
 	%% Update depedent objects
 	set(handles.(handles.edits(who)), 'String', num2str(value));
 
+	plotWorld(handles);

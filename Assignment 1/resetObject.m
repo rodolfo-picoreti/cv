@@ -1,2 +1,2 @@
 function [handles] = resetObject (handles)
-	1+1;
+	handles = resetKeys(handles, @(who) strfind(who, 'Obj'));
