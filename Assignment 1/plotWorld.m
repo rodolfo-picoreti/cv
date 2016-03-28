@@ -1,5 +1,6 @@
 function [] = plotWorld (handles)
 
+  %% --- Object Position in the World
   Robj = ...
     Rz(str2num(get(handles.editObjRZ, 'String')))* ...
     Ry(str2num(get(handles.editObjRY, 'String')))* ...
@@ -13,6 +14,7 @@ function [] = plotWorld (handles)
 
   Vobj = Tobj*Robj*handles.object.V;
 
+  %% --- Camera Position in the World
   Rcam = ...
     Rz(str2num(get(handles.editCamRZ, 'String')))* ...
     Ry(str2num(get(handles.editCamRY, 'String')))* ...
@@ -26,8 +28,7 @@ function [] = plotWorld (handles)
 
   Vcam = Tcam*Rcam*handles.camera.V;
 
-  
-
+  %% --- Plot World 
   axes(handles.worldFigure);
   cla
   hold on
@@ -50,3 +51,40 @@ function [] = plotWorld (handles)
           'FaceColor', 'b', 'EdgeColor', 'none');
 
   
+  %% --- Camera Projection
+  H = inv(Tcam*Rcam); % world to camera
+  P = [eye(3) zeros(3,1)];
+  
+  f = 50;
+  Kf = [ ...
+    f    0    0; ...
+    0    f    0; ...
+    0    0    1  ...
+  ];
+  
+  w = 640;
+  h = 480;
+  
+  sx = 10; 
+  sy = 10; 
+  ox = w/2;
+  oy = h/2;
+  
+  Ks = [ ...
+    sx    0   ox; ...
+    0    sy   oy; ...
+    0     0    1  ...
+  ];
+  
+  Vobj_cam = Ks*Kf*P*H*Vobj;
+  Vobj_cam(1, :) = Vobj_cam(1, :)./Vobj_cam(3, :);
+  Vobj_cam(2, :) = Vobj_cam(2, :)./Vobj_cam(3, :);
+
+  %% --- Plot Projection
+  axes(handles.cameraFigure);
+  cla
+  hold on
+  axis equal;
+  axis([0, w, 0, h]);
+
+  plot(Vobj_cam(1,:), Vobj_cam(2,:));
