@@ -71,12 +71,13 @@ function [] = plotWorld (handles)
   oy = h/2;
   
   Ks = [ ...
-    sx    0   ox; ...
-    0    sy   oy; ...
+    -sx    0   ox; ...
+    0    -sy   oy; ...
     0     0    1  ...
   ];
   
   Vobj_cam = Ks*Kf*P*H*Vobj;
+
   Vobj_cam(1, :) = Vobj_cam(1, :)./Vobj_cam(3, :);
   Vobj_cam(2, :) = Vobj_cam(2, :)./Vobj_cam(3, :);
 
@@ -85,6 +86,7 @@ function [] = plotWorld (handles)
   cla
   hold on
   axis equal;
+  set(gca, 'Ydir', 'reverse')
   axis([0, w, 0, h]);
 
   plot(Vobj_cam(1,:), Vobj_cam(2,:));
