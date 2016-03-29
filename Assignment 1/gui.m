@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 28-Mar-2016 19:32:51
+% Last Modified by GUIDE v2.5 28-Mar-2016 21:19:45
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -273,3 +273,11 @@ function edit20_CreateFcn(hObject, eventdata, handles)
 function edit19_CreateFcn(hObject, eventdata, handles)
 function edit18_CreateFcn(hObject, eventdata, handles)
 function edit17_CreateFcn(hObject, eventdata, handles)
+
+
+% --------------------------------------------------------------------
+function cameraMenu_Callback(hObject, eventdata, handles)
+% hObject    handle to cameraMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+    cameraMenu(handles);

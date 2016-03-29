@@ -1,5 +1,4 @@
 function [] = plotWorld (handles)
-
   %% --- Object Position in the World
   Robj = Rxyz(...
         str2num(get(handles.editObjRX, 'String')), ...
@@ -33,11 +32,10 @@ function [] = plotWorld (handles)
   cla
   hold on
   axis equal;
-  view([-25, 30])
   grid on;
   range = [handles.ranges('ObjTX'), handles.ranges('ObjTY'), handles.ranges('ObjTZ')];
   axis(range);
-
+  
   trisurf(handles.object.F, ...
           Vobj(1,:), ...
           Vobj(2,:), ...
@@ -77,16 +75,17 @@ function [] = plotWorld (handles)
   ];
   
   Vobj_cam = Ks*Kf*P*H*Vobj;
-
-  Vobj_cam(1, :) = Vobj_cam(1, :)./Vobj_cam(3, :);
-  Vobj_cam(2, :) = Vobj_cam(2, :)./Vobj_cam(3, :);
-
+    
+  itZpos = find(Vobj_cam(3,:)>0);
+  
+  Vobj_cam(1, itZpos) = Vobj_cam(1, itZpos)./Vobj_cam(3, itZpos);
+  Vobj_cam(2, itZpos) = Vobj_cam(2, itZpos)./Vobj_cam(3, itZpos);
+  
   %% --- Plot Projection
   axes(handles.cameraFigure);
   cla
   hold on
   axis equal;
-  set(gca, 'Ydir', 'reverse')
   axis([0, w, 0, h]);
 
-  plot(Vobj_cam(1,:), Vobj_cam(2,:));
+  plot(Vobj_cam(1,:), Vobj_cam(2,:),'r');
