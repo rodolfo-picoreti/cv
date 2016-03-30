@@ -22,7 +22,7 @@ function varargout = cameraMenu(varargin)
 
 % Edit the above text to modify the response to help cameraMenu
 
-% Last Modified by GUIDE v2.5 28-Mar-2016 21:41:44
+% Last Modified by GUIDE v2.5 30-Mar-2016 09:23:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -53,12 +53,21 @@ function cameraMenu_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to cameraMenu (see VARARGIN)
 
 % Choose default command line output for cameraMenu
-handles.output = hObject;
+  handles.output = hObject;
+  handles.onExit = varargin{1};
 
-% Update handles structure
-guidata(hObject, handles);
+  parameters = getCameraIntrinsicParameters();
+  focalLength = parameters.focalLength;
+  resolution = parameters.resolution;
+  scales = parameters.scales;
 
-mainHandles = varargin{1};
+  set(handles.editFocalLength, 'String', num2str(focalLength));
+  set(handles.editResolutionWidth, 'String', num2str(resolution(1)));
+  set(handles.editResolutionHeight, 'String', num2str(resolution(2)));
+  set(handles.editScaleX, 'String', num2str(scales(1)));
+  set(handles.editScaleY, 'String', num2str(scales(2)));
+  
+  guidata(hObject, handles);
 
 % UIWAIT makes cameraMenu wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -81,21 +90,34 @@ function buttonApply_Callback(hObject, eventdata, handles)
 % hObject    handle to buttonApply (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+  
+  focalLength = str2num(get(handles.editFocalLength, 'String'));
+  resolutionWidth = str2num(get(handles.editResolutionWidth, 'String'));
+  resolutionHeight = str2num(get(handles.editResolutionHeight, 'String'));
+  scaleX = str2num(get(handles.editScaleX, 'String'));
+  scaleY = str2num(get(handles.editScaleY, 'String'));
+
+  setCameraIntrinsicParameters( ...
+    focalLength, ...
+    [resolutionWidth resolutionHeight], ...
+    [scaleX scaleY] ...
+  );
+  handles.onExit();
+  close(handles.output)
 
 
-
-function edit1_Callback(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+function editFocalLength_Callback(hObject, eventdata, handles)
+% hObject    handle to editFocalLength (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit1 as text
-%        str2double(get(hObject,'String')) returns contents of edit1 as a double
+% Hints: get(hObject,'String') returns contents of editFocalLength as text
+%        str2double(get(hObject,'String')) returns contents of editFocalLength as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+function editFocalLength_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editFocalLength (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -153,18 +175,18 @@ end
 
 
 
-function edit5_Callback(hObject, eventdata, handles)
-% hObject    handle to edit5 (see GCBO)
+function editScaleX_Callback(hObject, eventdata, handles)
+% hObject    handle to editScaleX (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit5 as text
-%        str2double(get(hObject,'String')) returns contents of edit5 as a double
+% Hints: get(hObject,'String') returns contents of editScaleX as text
+%        str2double(get(hObject,'String')) returns contents of editScaleX as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit5_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit5 (see GCBO)
+function editScaleX_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editScaleX (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -203,3 +225,72 @@ function buttonCancel_Callback(hObject, eventdata, handles)
 % hObject    handle to buttonCancel (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+  close(handles.output)
+
+
+function editResolutionWidth_Callback(hObject, eventdata, handles)
+% hObject    handle to editResolutionWidth (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of editResolutionWidth as text
+%        str2double(get(hObject,'String')) returns contents of editResolutionWidth as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function editResolutionWidth_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editResolutionWidth (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function editResolutionHeight_Callback(hObject, eventdata, handles)
+% hObject    handle to editResolutionHeight (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of editResolutionHeight as text
+%        str2double(get(hObject,'String')) returns contents of editResolutionHeight as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function editResolutionHeight_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editResolutionHeight (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function editScaleY_Callback(hObject, eventdata, handles)
+% hObject    handle to editScaleY (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of editScaleY as text
+%        str2double(get(hObject,'String')) returns contents of editScaleY as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function editScaleY_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editScaleY (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

@@ -1,8 +1,9 @@
 function [handles] = initGui (handles)
+    initializeState();
+    
     handles = initHandles(handles);
     handles = initObject(handles);
     handles = initCamera(handles);
-
     handles = resetAll(handles);
 
     r3d = rotate3d;

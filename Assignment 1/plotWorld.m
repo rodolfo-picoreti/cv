@@ -52,32 +52,11 @@ function [] = plotWorld (handles)
   %% --- Camera Projection
   H = inv(Tcam*Rcam); % world to camera
   P = [eye(3) zeros(3,1)];
+  K = composeIntrinsicMatrix();
+
+  Vobj_cam = K*P*H*Vobj;
   
-  f = 50;
-  Kf = [ ...
-    f    0    0; ...
-    0    f    0; ...
-    0    0    1  ...
-  ];
-  
-  w = 640;
-  h = 480;
-  
-  sx = 10; 
-  sy = 10; 
-  ox = w/2;
-  oy = h/2;
-  
-  Ks = [ ...
-    -sx    0   ox; ...
-    0    -sy   oy; ...
-    0     0    1  ...
-  ];
-  
-  Vobj_cam = Ks*Kf*P*H*Vobj;
-    
-  itZpos = find(Vobj_cam(3,:)>0);
-  
+  itZpos = find(Vobj_cam(3,:)>0); %% filter points with positive values of Z
   Vobj_cam(1, itZpos) = Vobj_cam(1, itZpos)./Vobj_cam(3, itZpos);
   Vobj_cam(2, itZpos) = Vobj_cam(2, itZpos)./Vobj_cam(3, itZpos);
   
@@ -86,6 +65,6 @@ function [] = plotWorld (handles)
   cla
   hold on
   axis equal;
-  axis([0, w, 0, h]);
+  axis(getCameraResolution());
 
   plot(Vobj_cam(1,:), Vobj_cam(2,:),'r');

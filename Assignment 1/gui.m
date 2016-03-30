@@ -273,11 +273,11 @@ function edit20_CreateFcn(hObject, eventdata, handles)
 function edit19_CreateFcn(hObject, eventdata, handles)
 function edit18_CreateFcn(hObject, eventdata, handles)
 function edit17_CreateFcn(hObject, eventdata, handles)
-
-
+  
 % --------------------------------------------------------------------
 function cameraMenu_Callback(hObject, eventdata, handles)
 % hObject    handle to cameraMenu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-    cameraMenu(handles);
+  cameraMenu(@() plotWorld(handles));
+

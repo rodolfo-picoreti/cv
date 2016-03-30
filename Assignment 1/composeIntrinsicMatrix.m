@@ -1,0 +1,26 @@
+function [K] = composeIntrinsicMatrix()
+
+	global state
+
+	f = state.camera.focalLength;
+	Kf = [ ...
+		f    0    0; ...
+		0    f    0; ...
+		0    0    1  ...
+	];
+	  
+	w = state.camera.resolution(1);
+	h = state.camera.resolution(2);
+
+	sx = state.camera.scales(1); 
+	sy = state.camera.scales(2); 
+	ox = w/2;
+	oy = h/2;
+
+	Ks = [ ...
+		-sx    0   ox; ...
+		0    -sy   oy; ...
+		0     0    1  ...
+	];
+	   
+	K = Ks*Kf;
