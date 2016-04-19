@@ -1,14 +1,33 @@
 #include <armadillo> // -larmadillo
 #include <cstdint>
 #include <cmath>
+
 #include <iostream>
+
 #include "libs/congo/ransac.hpp"
+#include "libs/congo/dlt.hpp"
+
+arma::mat generate_line_data(int length, double outlier_proportion) {
+  using namespace arma;
+  long int n_outliers = std::lround(outlier_proportion*length);
+
+  mat data = ones(3, length);
+  data.row(0) = linspace<mat>(1, 10, length).t(); 
+  data.row(1) = linspace<mat>(1, 10, length).t()*2.5 + 3;
+  
+  uvec indices = congo::rand_indices(0, data.n_cols);
+  data.cols(indices.head(n_outliers)) += 
+    join_cols(
+      join_cols( zeros(1,n_outliers), randn(1,n_outliers) ), zeros(1,n_outliers) ); 
+
+  return data;
+}
 
 arma::mat fit_model(const arma::mat& data) {
   return arma::cross(data.col(0), data.col(1));
 }
 
-arma::mat cost_function(const arma::mat& model, const arma::mat& data) {
+arma::mat distance_function(const arma::mat& model, const arma::mat& data) {
   double norm = sqrt(model(0,0)*model(0,0) + model(1,0)*model(1,0));
   arma::mat normalized_line = model/norm;
   return arma::abs(normalized_line.t() * data);
@@ -17,33 +36,45 @@ arma::mat cost_function(const arma::mat& model, const arma::mat& data) {
 int main() {
   using namespace arma;
   arma_rng::set_seed_random();
+  /*
 
-  congo::ransac::options opt {
-    .max_iter = 100,
+  congo::ransac::parameters parameters {
     .nfit_points = 2,
-    .tolerance = 1e-2,
+    .distance_threshold = 1e-2,
     .model_function = fit_model,
-    .cost_function = cost_function
+    .distance_function = distance_function
   };
 
-  int N = 100;
-  double p = 0.45;
-  int O = std::floor(p*N);
-
-  mat data = ones(3, N);
-  data.row(0) = linspace<mat>(1, 10, N).t(); 
-  data.row(1) = linspace<mat>(1, 10, N).t()*2.5 + 3;
-  
-  uvec indices = congo::rand_indices(0, data.n_cols);
-  data.cols(indices.head(O)) += 
-    join_cols(
-      join_cols( zeros(1,O), 100*randn(1,O) ), zeros(1,O) ); 
-  
-  mat inliers = congo::ransac::find_inliers(data, opt);
-
+  mat data = generate_line_data(100, 0.45);
+  mat inliers = congo::ransac::find_inliers(data, parameters);
+    
   data = data.t();
   inliers = inliers.t();
 
   data.save("data.mat", raw_ascii); 
   inliers.save("inliers.mat", raw_ascii);
+  */
+
+  mat xi {
+    { 0.0, 0.0, 1.0, 1.0, 2.0 },
+    { 0.0, 1.0, 0.0, 1.0, 2.0 },
+    { 1.0, 1.0, 1.0, 1.0, 1.0 }
+  };
+
+  mat xli = xi;
+  xli.row(0) *= 2;
+  xli.row(0) += 10;
+  xli.row(1) *= 5;
+  xli.row(1) += 20;
+
+  mat H = congo::dlt::homography_2d(join_vert(xi, xli));
+  H.print("H");  
+
+  mat xli_hat = H*xi;
+  xli_hat.each_col([] (vec& col) {
+    col /= col(2);
+  });
+
+  xli.print("xli");  
+  xli_hat.print("x'i_hat");  
 }
