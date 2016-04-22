@@ -1,80 +1,82 @@
 #include <armadillo> // -larmadillo
 #include <cstdint>
 #include <cmath>
-
 #include <iostream>
 
 #include "libs/congo/ransac.hpp"
 #include "libs/congo/dlt.hpp"
 
-arma::mat generate_line_data(int length, double outlier_proportion) {
-  using namespace arma;
-  long int n_outliers = std::lround(outlier_proportion*length);
+#include <dlib/optimization.h>
 
-  mat data = ones(3, length);
-  data.row(0) = linspace<mat>(1, 10, length).t(); 
-  data.row(1) = linspace<mat>(1, 10, length).t()*2.5 + 3;
-  
-  uvec indices = congo::rand_indices(0, data.n_cols);
-  data.cols(indices.head(n_outliers)) += 
-    join_cols(
-      join_cols( zeros(1,n_outliers), randn(1,n_outliers) ), zeros(1,n_outliers) ); 
+arma::mat optimize (const arma::mat& _xi, 
+                    const arma::mat& _xli, 
+                    const arma::mat& _H) {
+  using namespace dlib;
 
-  return data;
-}
+  matrix<double> xi = mat(_xi);
+  matrix<double> xli = mat(_xli);
+  matrix<double, 0, 1> H = mat(_H);
 
-arma::mat fit_model(const arma::mat& data) {
-  return arma::cross(data.col(0), data.col(1));
-}
+  find_min_using_approximate_derivatives(
+    bfgs_search_strategy(),
+    objective_delta_stop_strategy(1e-3),
+    [&xi, &xli] (const matrix<double>& _H) {
+      matrix<double> H = trans(reshape(_H, 3, 3)) / _H(8);
+      matrix<double> i2li = (xli - H*xi);
+      matrix<double> li2i = (xi - inv(H)*xli);
 
-arma::mat distance_function(const arma::mat& model, const arma::mat& data) {
-  double norm = sqrt(model(0,0)*model(0,0) + model(1,0)*model(1,0));
-  arma::mat normalized_line = model/norm;
-  return arma::abs(normalized_line.t() * data);
+
+      double cost = dot(i2li, i2li) + dot(li2i, li2i);
+      return cost;
+    }, 
+    H, 
+    -1
+  );
+
+  arma::mat Hopt {
+    { H(0), H(3), H(6) },
+    { H(1), H(4), H(7) },
+    { H(2), H(5), H(8) },
+  };
+
+  return Hopt / H(8);
 }
 
 int main() {
   using namespace arma;
   arma_rng::set_seed_random();
-  /*
-
-  congo::ransac::parameters parameters {
-    .nfit_points = 2,
-    .distance_threshold = 1e-2,
-    .model_function = fit_model,
-    .distance_function = distance_function
-  };
-
-  mat data = generate_line_data(100, 0.45);
-  mat inliers = congo::ransac::find_inliers(data, parameters);
-    
-  data = data.t();
-  inliers = inliers.t();
-
-  data.save("data.mat", raw_ascii); 
-  inliers.save("inliers.mat", raw_ascii);
-  */
-
+  
   mat xi {
     { 0.0, 0.0, 1.0, 1.0, 2.0 },
     { 0.0, 1.0, 0.0, 1.0, 2.0 },
     { 1.0, 1.0, 1.0, 1.0, 1.0 }
   };
+  xi.rows(0, 1) *= 100; 
 
   mat xli = xi;
-  xli.row(0) *= 2;
+  xli.row(0) *= 5;
   xli.row(0) += 10;
   xli.row(1) *= 5;
-  xli.row(1) += 20;
+  xli.row(1) += 10;
+
+  xi.rows(0, 1) += randn(size(xi.rows(0, 1)));
+  xli.rows(0, 1) += randn(size(xli.rows(0, 1)));
 
   mat H = congo::dlt::homography_2d(join_vert(xi, xli));
-  H.print("H");  
-
   mat xli_hat = H*xi;
-  xli_hat.each_col([] (vec& col) {
-    col /= col(2);
-  });
 
-  xli.print("xli");  
+  mat Hopt = optimize(xi, xli, arma::vectorise(H));
+  mat xli_hat_opt = Hopt*xi;
+
+  mat Hpinv = xli * pinv(xi);
+  mat xli_pinv = Hpinv * xi;
+
+  H.print("H");  
+  Hopt.print("Hopt");
+  Hpinv.print("Hpinv");  
+
+  xli.print("x'i");  
   xli_hat.print("x'i_hat");  
+  xli_hat_opt.print("x'i_hat_opt");  
+  xli_pinv.print("x'i_pinv");  
 }
